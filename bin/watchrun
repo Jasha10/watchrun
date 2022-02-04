@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#######################################################################################
 USAGE=$(cat <<-EOM
 NAME
         watchrun - A wrapper around "watchman-make ... --run ..."
@@ -11,7 +12,7 @@ DESCRIPTION
         flag "--run" do not need to be quoted or escaped.
 
         The call from the SYNOPSIS above is equivalent to the following:
-        watchman-make -p PATTERN [ PATTERN ... ] --run "QUOTED_AND_ESCAPED_COMMAND_and_ARGS"
+        watchman-make -p PATTERN [ PATTERN ... ] --run "QUOTED_ESCAPED_COMMAND_and_ARGS"
 
 EXAMPLES
         watchrun 'scripts/*' '*.yaml' -- pytest -k 'pytest pattern'
@@ -19,6 +20,7 @@ EXAMPLES
         watchman-make -p 'scripts/*' '*.yaml' --run "pytest -k 'pytest pattern'"
 EOM
 )
+#######################################################################################
 
 # parse pre-dash args
 SEEN_DOUBLE_DASH=false
