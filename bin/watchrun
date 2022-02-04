@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+USAGE=$(cat <<-EOM
+NAME
+        watchrun - A wrapper around "watchman-make ... --run ..."
+
+SYNOPSIS
+        watchrun PATTERN [ PATTERN ... ] -- COMMAND [ ARGS ]
+
+DESCRIPTION
+        Wrap "watchman-make ... --run ..." so that the arguments to the
+        flag "--run" do not need to be quoted or escaped.
+
+        The call from the SYNOPSIS above is equivalent to the following:
+        watchman-make -p PATTERN [ PATTERN ... ] --run "QUOTED_AND_ESCAPED_COMMAND_and_ARGS"
+
+EXAMPLES
+        watchrun 'scripts/*' '*.yaml' -- pytest -k 'pytest pattern'
+            This should be precisely equivalent to the following:
+        watchman-make -p 'scripts/*' '*.yaml' --run "pytest -k 'pytest pattern'"
+EOM
+)
+
+# parse pre-dash args
+SEEN_DOUBLE_DASH=false
+PRE_DASH_ARGS=()
+while (( $# > 0 )) && [[ $SEEN_DOUBLE_DASH == false ]]; do
+    case "$1" in
+        --) SEEN_DOUBLE_DASH=true ;;
+        *) PRE_DASH_ARGS+=("$1") ;;
+    esac
+    shift
+done
+
+# parse post-dash args
+if ! (( $# > 0 )); then
+    echo "Error: No post-double-dash arguments found."
+    echo "$USAGE"
+    exit 1
+fi
+POST_DASH_ARGS="${1@Q}"  # shell escape
+shift
+while (( $# > 0 )); do
+    POST_DASH_ARGS+=" "
+    POST_DASH_ARGS+="${1@Q}"  # shell escape
+    shift
+done
+
+# invoke watchman-make
+echo "PATTERNS:		${PRE_DASH_ARGS[@]}"
+echo "COMMAND_AND_ARGS:	$POST_DASH_ARGS"
+watchman-make -p "${PRE_DASH_ARGS[@]}" --run "$POST_DASH_ARGS"
+
+# vi: ft=bash
