@@ -5,14 +5,15 @@ NAME
         watchrun - A wrapper around "watchman-make ... --run ..."
 
 SYNOPSIS
-        watchrun PATTERN [ PATTERN ... ] -- COMMAND [ ARGS ]
+        watchrun PATTERN [PATTERN ...] [--initial-run] -- COMMAND [ARGS]
 
 DESCRIPTION
         Wrap "watchman-make ... --run ..." so that the arguments to the
         flag "--run" do not need to be quoted or escaped.
 
-        The call from the SYNOPSIS above is equivalent to the following:
-        watchman-make -p PATTERN [ PATTERN ... ] --run "QUOTED_ESCAPED_COMMAND_and_ARGS"
+        The call from the SYNOPSIS above, exluding the --initial-run flag, is
+            equivalent to the following:
+        watchman-make -p PATTERN [PATTERN ...] --run "QUOTED_ESCAPED_COMMAND_and_ARGS"
 
 OPTIONS
         --initial-run
