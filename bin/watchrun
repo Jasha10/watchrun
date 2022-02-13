@@ -12,30 +12,38 @@ DESCRIPTION
         flag "--run" do not need to be quoted or escaped.
 
         The call from the SYNOPSIS above, exluding the --initial-run flag, is
-            equivalent to the following:
+            mostly equivalent to the following:
         watchman-make -p PATTERN [PATTERN ...] --run "QUOTED_ESCAPED_COMMAND_and_ARGS"
+
+        Differences include:
+          - by default, an initial run of QUOTED_ESCAPED_COMMAND_and_ARGS is performed
+            before invoking watchman-make. This can be disabled with the
+            --no-initial-run flag.
 
 OPTIONS
         --initial-run
+        --no-initial-run
             This option triggers an initial run of "COMMAND [ ARGS ]" before
-            watchman-make is invoked.
+            watchman-make is invoked. A failure of the initial run does not 
 
 EXAMPLES
         watchrun 'scripts/*' '*.yaml' -- pytest -k 'pytest pattern'
             This should be precisely equivalent to the following:
         watchman-make -p 'scripts/*' '*.yaml' --run "pytest -k 'pytest pattern'"
+
 EOM
 )
 #######################################################################################
 
 # parse pre-dash args
 SEEN_DOUBLE_DASH=false
-INITIAL_RUN=false
+INITIAL_RUN=true
 PRE_DASH_ARGS=()
 while (( $# > 0 )) && [[ $SEEN_DOUBLE_DASH == false ]]; do
     case "$1" in
         --) SEEN_DOUBLE_DASH=true ;;
         --initial-run) INITIAL_RUN=true ;;
+        --no-initial-run) INITIAL_RUN=false ;;
         *) PRE_DASH_ARGS+=("$1") ;;
     esac
     shift
