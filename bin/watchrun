@@ -8,7 +8,7 @@ SYNOPSIS
         watchrun PATTERN [PATTERN ...] [--[no-]initial-run] -- COMMAND [ARGS]
 
 DESCRIPTION
-        Wrap "watchman-make ... --run ..." so that the arguments to the
+        Wraps "watchman-make ... --run ..." so that the arguments to the
         flag "--run" do not need to be quoted or escaped.
 
         The call from the SYNOPSIS above, exluding the --initial-run flag, is
