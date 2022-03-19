@@ -5,7 +5,7 @@ NAME
         watchrun - A wrapper around "watchman-make ... --run ..."
 
 SYNOPSIS
-        watchrun PATTERN [PATTERN ...] [--initial-run] -- COMMAND [ARGS]
+        watchrun PATTERN [PATTERN ...] [--[no-]initial-run] -- COMMAND [ARGS]
 
 DESCRIPTION
         Wrap "watchman-make ... --run ..." so that the arguments to the
@@ -24,10 +24,11 @@ OPTIONS
         --initial-run
         --no-initial-run
             This option triggers an initial run of "COMMAND [ ARGS ]" before
-            watchman-make is invoked. A failure of the initial run does not 
+            watchman-make is invoked. A failure of the initial run does not
+            prevent subsequent runs.
 
 EXAMPLES
-        watchrun 'scripts/*' '*.yaml' -- pytest -k 'pytest pattern'
+        watchrun 'scripts/*' '*.yaml' --no-initial-run -- pytest -k 'pytest pattern'
             This should be precisely equivalent to the following:
         watchman-make -p 'scripts/*' '*.yaml' --run "pytest -k 'pytest pattern'"
 
