@@ -47,12 +47,15 @@ EOM
 # parse pre-dash args
 SEEN_DOUBLE_DASH=false
 INITIAL_RUN=true
+RED_EXIT=true
 PRE_DASH_ARGS=()
 while (( $# > 0 )) && [[ $SEEN_DOUBLE_DASH == false ]]; do
     case "$1" in
         --) SEEN_DOUBLE_DASH=true ;;
         --initial-run) INITIAL_RUN=true ;;
         --no-initial-run) INITIAL_RUN=false ;;
+        --redexit) RED_EXIT=true ;;
+        --no-redexit) RED_EXIT=false ;;
         *) PRE_DASH_ARGS+=("$1") ;;
     esac
     shift
@@ -75,6 +78,17 @@ done
 # invoke watchman-make
 echo "PATTERNS:		${PRE_DASH_ARGS[@]}"
 echo "COMMAND_AND_ARGS:	$POST_DASH_ARGS"
+
+if [[ $RED_EXIT == true ]]; then
+    RED='\033[0;31m'
+    NC='\033[0m' # No Color
+    RED_EXIT_STR=" || ret=$?;"
+    RED_EXIT_STR+=" echo -e '${RED}command \"$POST_DASH_ARGS\" failed with exit code'"
+    RED_EXIT_STR+=' $ret'
+    RED_EXIT_STR+="'${NC}'"
+    POST_DASH_ARGS+="$RED_EXIT_STR"
+fi
+
 if [[ $INITIAL_RUN == true ]]; then
     echo "Performing initial run"
     eval "$POST_DASH_ARGS"
