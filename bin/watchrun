@@ -81,11 +81,12 @@ while (( $# > 0 )); do
     shift
 done
 
-COMMAND_AND_ARGS="$POST_DASH_ARGS"
+INPUT_COMMAND_AND_ARGS="$POST_DASH_ARGS"
+INITIAL_RUN_ARGS="$POST_DASH_ARGS"
 
 # invoke watchman-make
 echo "PATTERNS:		${PRE_DASH_ARGS[@]}"
-echo "COMMAND_AND_ARGS:	$COMMAND_AND_ARGS"
+echo "COMMAND_AND_ARGS:	$INPUT_COMMAND_AND_ARGS"
 
 NC='\033[0m' # No Color
 GREEN='\033[32m'
@@ -93,17 +94,17 @@ RED='\033[0;31m'
 # RED_BG='\033[41m'
 # GREEN_BG='\033[42m'
 if [[ $GREEN_EXIT == true ]]; then
-    GREEN_EXIT_STR=" && echo -e '${GREEN}'\"command $COMMAND_AND_ARGS succeeded \"'${NC}'"
-    POST_DASH_ARGS+="$GREEN_EXIT_STR"
+    INITIAL_RUN_ARGS+=" && echo -e '${GREEN}'\"command $INPUT_COMMAND_AND_ARGS succeeded \"'${NC}'"
+    POST_DASH_ARGS+=" && echo '${GREEN}'\"command $INPUT_COMMAND_AND_ARGS succeeded \"'${NC}'"
 fi
 if [[ $RED_EXIT == true ]]; then
-    RED_EXIT_STR=" || { ret=\$?; echo -e '${RED}'\"command $COMMAND_AND_ARGS failed with exit code \$ret\"'${NC}'; }"
-    POST_DASH_ARGS+="$RED_EXIT_STR"
+    INITIAL_RUN_ARGS+=" || { ret=\$?; echo -e '${RED}'\"command $INPUT_COMMAND_AND_ARGS failed with exit code \$ret\"'${NC}'; }"
+    POST_DASH_ARGS+=" || { ret=\$?; echo '${RED}'\"command $INPUT_COMMAND_AND_ARGS failed with exit code \$ret\"'${NC}'; }"
 fi
 
 if [[ $INITIAL_RUN == true ]]; then
     echo "Performing initial run"
-    eval "$POST_DASH_ARGS"
+    eval "$INITIAL_RUN_ARGS"
     echo "Initial run complete."
 fi
 watchman-make -p "${PRE_DASH_ARGS[@]}" --run "$POST_DASH_ARGS"
