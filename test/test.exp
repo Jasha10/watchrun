@@ -1,0 +1,41 @@
+#!/usr/bin/env expect
+puts "\nSTARTING TEST\n"
+
+log_user 0
+set timeout 1
+
+set RED_COLOR "\033\\\[0;31m"
+set GREEN_COLOR "\033\\\[32m"
+set NO_COLOR "\033\\\[0m"
+
+spawn watchrun '*' -- false
+
+expect {
+    -re "\nPerforming initial run\r" {
+        puts "matched!"
+    }
+    default { puts "did not match" }
+}
+
+expect {
+    -re "\n${RED_COLOR}command 'false' failed with exit code 1${NO_COLOR}\r" {
+        puts "matched!"
+    }
+    default { puts "did not match" }
+}
+
+spawn watchrun '*' -- true
+
+expect {
+    -re "\nPerforming initial run\r" {
+        puts "matched!"
+    }
+    default { puts "did not match" }
+}
+
+expect {
+    -re "\n${GREEN_COLOR}command 'true' succeeded${NO_COLOR}" {
+        puts "matched!"
+    }
+    default { puts "did not match" }
+}
