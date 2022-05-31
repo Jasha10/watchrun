@@ -47,6 +47,11 @@ EOM
 )
 #######################################################################################
 
+# TODO: be able to handle chains of multiple commands e.g. separated by semicolon or && or within brackets or subshell
+# { A ; B ; }
+# ( A ; B ; )
+# A && B
+
 # parse pre-dash args
 SEEN_DOUBLE_DASH=false
 INITIAL_RUN=true
@@ -73,6 +78,8 @@ if ! (( $# > 0 )); then
     echo "$USAGE"
     exit 1
 fi
+
+# Can the following paragraph be replaced with `POST_DASH_ARGS="${*@Q}"` ?
 POST_DASH_ARGS="${1@Q}"  # shell escape
 shift
 while (( $# > 0 )); do
