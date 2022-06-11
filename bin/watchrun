@@ -52,6 +52,11 @@ EOM
 # ( A ; B ; )
 # A && B
 
+# TODO: I'd like to be able to declare watchrun as a project dependency for other software.
+# This means having some way to install watchrun. How should we distribute it?
+#  - use a package manager like bpkg to wrap it?
+#  - use something like bazel to install it?
+
 # parse pre-dash args
 SEEN_DOUBLE_DASH=false
 INITIAL_RUN=true
