@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 #######################################################################################
+# TODO: if exactly one arg is passed after the double dash and if it is
+# more than one word (i.e. if the string contains spaces), then treate it
+# as bash to be eval'd
 USAGE=$(cat <<-EOM
 NAME
         watchrun - A wrapper around "watchman-make ... --run ..."
@@ -84,21 +87,16 @@ if ! (( $# > 0 )); then
     exit 1
 fi
 
-# Can the following paragraph be replaced with `POST_DASH_ARGS="${*@Q}"` ?
-POST_DASH_ARGS="${1@Q}"  # shell escape
-shift
-while (( $# > 0 )); do
-    POST_DASH_ARGS+=" "
-    POST_DASH_ARGS+="${1@Q}"  # shell escape
-    shift
-done
+COMMAND_AND_ARGS="${*@Q}"
+# Using `eval` below allows handling each of the following cases:
+# 1. Several arguments, e.g COMMAND and ARGS...
+# 2. A single argument that is a string consisting of a quoted COMMAND and maybe ARGS...
+COMMAND_TO_RUN="eval '${*@Q}'"
 
-INPUT_COMMAND_AND_ARGS="$POST_DASH_ARGS"
-INITIAL_RUN_ARGS="$POST_DASH_ARGS"
 
 # invoke watchman-make
 echo "PATTERNS:		${PRE_DASH_ARGS[@]}"
-echo "COMMAND_AND_ARGS:	$INPUT_COMMAND_AND_ARGS"
+echo "COMMAND_AND_ARGS:	$COMMAND_AND_ARGS"
 
 NC='\033[0m' # No Color
 GREEN='\033[32m'
@@ -106,21 +104,19 @@ RED='\033[0;31m'
 # RED_BG='\033[41m'
 # GREEN_BG='\033[42m'
 if [[ $GREEN_EXIT == true ]]; then
-    MSG="'${GREEN}'\"command $INPUT_COMMAND_AND_ARGS succeeded\"'${NC}'"
-    INITIAL_RUN_ARGS+=" && echo -e $MSG"
-    POST_DASH_ARGS+=" && echo $MSG"
+    MSG="'${GREEN}'\"command $COMMAND_AND_ARGS succeeded\"'${NC}'"
+    COMMAND_TO_RUN+=" && echo -e $MSG"
 fi
 if [[ $RED_EXIT == true ]]; then
-    MSG="'${RED}'\"command $INPUT_COMMAND_AND_ARGS failed with exit code \$ret\"'${NC}'"
-    INITIAL_RUN_ARGS+=" || { ret=\$?; echo -e $MSG; }"
-    POST_DASH_ARGS+=" || { ret=\$?; echo $MSG; }"
+    MSG="'${RED}'\"command $COMMAND_AND_ARGS failed with exit code \$ret\"'${NC}'"
+    COMMAND_TO_RUN+=" || { ret=\$?; echo -e $MSG; }"
 fi
 
 if [[ $INITIAL_RUN == true ]]; then
     echo "Performing initial run"
-    eval "$INITIAL_RUN_ARGS"
+    eval "$COMMAND_TO_RUN"
     echo "Initial run complete."
 fi
-watchman-make -p "${PRE_DASH_ARGS[@]}" --run "$POST_DASH_ARGS"
+watchman-make -p "${PRE_DASH_ARGS[@]}" --run "${COMMAND_TO_RUN}"
 
 # vi: ft=bash
