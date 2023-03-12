@@ -95,8 +95,12 @@ COMMAND_TO_RUN="eval '${*@Q}'"
 
 
 # invoke watchman-make
-echo "PATTERNS:		${PRE_DASH_ARGS[@]}"
-echo "COMMAND_AND_ARGS:	$COMMAND_AND_ARGS"
+echo "PATTERNS:"
+for pattern in "${PRE_DASH_ARGS[@]}"; do
+    echo "	$pattern"
+done
+echo "COMMAND_AND_ARGS:"
+echo "	$COMMAND_AND_ARGS"
 
 NC='\033[0m' # No Color
 GREEN='\033[32m'
