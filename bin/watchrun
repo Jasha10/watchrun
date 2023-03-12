@@ -82,7 +82,7 @@ done
 
 # parse post-dash args
 if ! (( $# > 0 )); then
-    echo "Error: No post-double-dash arguments found."
+    echo "Error: No post-double-dash arguments found.\n"
     echo "$USAGE"
     exit 1
 fi
